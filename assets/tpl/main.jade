@@ -1,0 +1,145 @@
+.ui.compact.message.bz-message(v-on:click="messageClose" v-bind:class="{'positive': msg.status == 1, 'negative': msg.status == 0, 'transition': true, 'hidden': true}")
+    i.close.icon
+    p(v-if="msg.status == 0") {{msg.text}}！
+    p(v-if="msg.status == 1") 短信发送成功！
+    p(v-if="msg.status == 2") 网络错误，请稍后再试！
+.ui.container
+    header
+        .ui.grid
+            .twelve.wide.column
+                h1.ui.header 
+                    i.doctor.icon
+                    | 百忠牙科
+            .four.wide.column
+                .ui.icon.button.bz-logout(v-on:click="logout" data-content="登出")
+                    i.sign.out.icon
+                .ui.icon.button.bz-notice-btn(v-on:click="noticeCtrl" data-content="消息")
+                    i.announcement.icon
+    .ui.green.label.sms-count
+        | 可用短信
+        .detail {{info.sms}}
+    <notice></notice>
+    .section
+        h3.ui.dividing.header 新增客户资料
+        .ui.form(v-bind:class="{'error': !validate}")
+            .two.fields
+                .field
+                    label 姓名
+                    input(type="text" v-model="form.name")
+                .field
+                    label 电话
+                    input(type="text" v-model="form.tel")
+            .field
+                label 备注
+                textarea(rows="2" v-model="form.desc")
+            .button.ui.blue.button(v-on:click="submit" v-bind:class="{'disabled':!validate}") 提交
+            .ui.error.message
+                ul.list
+                    li(v-if="!form.name") 请输入姓名
+                    li(v-if="!form.tel") 请输入手机号码
+                    li(v-if="!isTel && form.tel") 你输入的手机号码有误
+    .section
+        h3.ui.dividing.header 客户列表
+        div.table-control
+            .ui.left.icon.input.user-search
+                input(type="text" placeholder="搜索姓名或手机号码..." v-model="search" v-on:input="searchLike" v-on:blur="search = ''")
+                i.users.icon
+            button.ui.icon.button.sort-button(v-on:click="sortList" data-content="排序")
+                i.sort.numeric.ascending.icon(v-show="sort == 1")
+                i.sort.numeric.descending.icon(v-show="sort == -1")
+            .ui.checkbox#filterSend
+                input(type="checkbox" name="send" tabindex="0" class="hidden")
+                label 未通知
+            .ui.checkbox#filterArrived
+                input(type="checkbox" name="arrived" tabindex="0" class="hidden")
+                label 未到诊
+        table.ui.very.basic.right.aligned.table.user-list
+            thead
+                tr
+                    th 
+                        span.date-tags 登记/来访
+                    th 姓名
+                    th 电话
+                    th 备注
+                    th 编辑
+                    th 功能
+                    th 通知
+                    th 到诊
+            tbody
+                tr(v-for="item in list | orderBy 'visitDate' sort | filterBy filter.send in 'sent' | filterBy filter.arrived in 'arrive' | limitBy pages 0" v-bind:class="{'positive':item.name == search || item.tel == search}")
+                    td 
+                        div.date-tags {{item.date}}
+                        div(v-show="!item.editable") {{item.visitDate}}
+                        .ui.input(v-show="item.editable")
+                            input(type="text" v-model="item.visitDate")
+                        
+                    td
+                        .ui.input(v-show="item.editable")
+                            input(type="text" v-model="item.name")
+                        div(v-show="!item.editable") {{item.name}}
+                    td
+                        .ui.input(v-show="item.editable")
+                            input(type="text" v-model="item.tel")
+                        div(v-show="!item.editable")
+                            span(v-show="!item.telClone || !searching") {{item.tel}}
+                            div(v-html="item.telClone" v-show="item.telClone && searching")
+                    td
+                        div(v-show="!item.editable")
+                            template(v-if="!item.desc") ...
+                            template(v-else) {{item.desc}}
+                        .ui.form(v-show="item.editable")
+                            .field
+                                textarea(rows="2" v-model="item.desc")
+                    td
+                        .ui.icon.bottom.left.pointing.dropdown.button
+                            i.write.icon
+                            .menu
+                                .item(v-on:click="del($key)") 
+                                    i.remove.icon
+                                    span.text 删除
+                                .item(v-on:click="modify(item, $key)")
+                                    i.edit.icon
+                                    span.text(v-if="!item.editable") 修改
+                                    span.text(v-else) 保存
+                    td
+                        .ui.icon.bottom.left.pointing.dropdown.button
+                            i.wrench.icon
+                            .menu
+                                .item(v-on:click="sms(item, $key)")
+                                    i.mail.outline.icon
+                                    span.text 短信
+                                .item(v-on:click="attendance(item, $key, $event)")
+                                    i.flag.icon
+                                    span.text 到诊
+                    td
+                        i.checkmark.green.icon(v-if="item.sent")
+                        i.remove.red.icon(v-else)
+                    td
+                        i.checkmark.green.icon(v-if="item.arrive")
+                        i.remove.red.icon(v-else)
+            tfoot
+                tr
+                    th(colspan="8")
+                        .ui.right.floated.pagination.menu
+                            a.item.icon
+                                i.left.chevron.icon
+                            a.item 1
+                            a.item.active 2
+                            a.item 3
+                            a.item 4
+                            a.item 5
+                            a.item.icon
+                                i.right.chevron.icon
+    .ui.small.basic.modal
+        .ui.icon.header
+            i.archive.icon
+            | 删除数据？
+        .content
+            p 数据删除不可恢复，是否要删除本条数据？
+        .actions
+            .ui.red.basic.cancel.inverted.button
+                i.remove.icon
+                | No
+            .ui.green.ok.inverted.button(v-on:click="confirm")
+                i.checkmark.icon
+                | Yes

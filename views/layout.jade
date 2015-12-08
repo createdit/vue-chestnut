@@ -1,0 +1,13 @@
+doctype html
+html
+	head
+		title #{title}
+		meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")
+		link(rel="icon" sizes="any" href="/16-16logo.png" mmask)
+		link(rel="stylesheet" href="/libs/semantic.min.css")
+		link(rel="stylesheet" href="/libs/bootstrap-datepicker3.min.css")
+		link(rel="stylesheet" href="/css/app#{prefix}.css")
+		script(src="https://cdn.wilddog.com/js/client/current/wilddog.js")
+	body#app
+		block content
+		include ./include/foot.jade
