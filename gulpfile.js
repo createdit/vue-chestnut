@@ -31,7 +31,8 @@ var gulp = require('gulp'),
   coffeelint = require('gulp-coffeelint'),
   //clean = require('gulp-clean');
   argv = require('yargs').argv,
-  coffeeify = require('coffeeify');
+  coffeeify = require('coffeeify'),
+  jade = require('gulp-jade');
 
 gulp.task('serve', function () {
   var port = 4000;
@@ -70,25 +71,7 @@ gulp.task('serve', function () {
   }
 });
 
-gulp.task('less', function () {
-  gulp.src('asset/styles/*.less')
-    // prevent pipe breaking caused by errors
-    .pipe(plumber())
-    .pipe(sourcemaps.init())
-    .pipe(less())
-    .pipe(autoprefixer({
-      browsers: ['last 2 versions']
-    }))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('dist/css/'));
-});
-
 gulp.task('watch:style', function () {
-  // gulp.watch('asset/styles/**/*.less', ['less']);
-  runSequence('sass', function () {
-    return gulp.watch('dist/css/**/*.css').on('change', stackReload);
-  });
-
   function stackReload() {
     var reload_args = arguments;
     if (this.timer) {
@@ -100,13 +83,16 @@ gulp.task('watch:style', function () {
       }, 250);
     }
   }
+  runSequence('sass', function () {
+    return gulp.watch('dist/css/**/*.css').on('change', stackReload);
+  });
 });
 
 gulp.task('watch:html', function () {
-  return gulp.watch(['views/**/*.jade'], function (e) {
+  return gulp.watch(['views/**/*.jade', '*.html'], function (e) {
     gulp.src(e.path)
       .pipe(livereload());
-  })
+  });
 });
 
 gulp.task('watch:script', function () {
@@ -216,16 +202,9 @@ gulp.task('build:bundle', function (done) {
   });
   createBundles(files, d);
 });
+
 gulp.task('minify:css', function () {
-  // var filter = gfilter(['*', '!*.min.css']);
-  // return gulp.src('./dist/css/*.css')
-  //   .pipe(filter)
-  //   .pipe(minifyCss())
-  //   .pipe(rename(function (path) {
-  //     path.basename += ".min";
-  //   }))
-  //   .pipe(gulp.dest('dist/css'));
-    sass('./assets/styles/**/*.sass', {
+  sass('./assets/styles/**/*.sass', {
       sourcemap: true,
       stopOnError: false
     })
@@ -236,6 +215,7 @@ gulp.task('minify:css', function () {
     }))
     .pipe(gulp.dest('./dist/css'));
 });
+
 var minifyFilesCache = [];
 gulp.task('minify:js', function () {
   var filter = gfilter(['*', '!*.min.js']);
@@ -262,7 +242,73 @@ gulp.task('replace:jsPath', function () {
     .pipe(gulp.dest('./dist'));
 });
 
-// something useful but not be used in this project
+gulp.task('jade', function () {
+  gulp.watch(['./assets/templates/*.jade', '!./assets/templates/layout.jade'], function (event) {
+    gulp.src(event.path)
+      .pipe(plumber())
+      .pipe(jade({
+        pretty: true
+      }))
+      .pipe(gulp.dest('./dist'))
+      .pipe(livereload());
+  });
+});
+
+gulp.task('coffee', function () {
+  gulp.watch('./assets/scripts/**/*.coffee', function (event) {
+    gulp.src(event.path)
+      .pipe(plumber())
+      .pipe(sourcemaps.init())
+      .pipe(coffee())
+      .pipe(sourcemaps.write())
+      .pipe(gulp.dest('./dist/js'))
+      .pipe(livereload());
+  });
+});
+
+function sassAction (path) {
+  return sass(path, {
+      sourcemap: true,
+      stopOnError: false
+    })
+    .on('error', sass.logError)
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('./dist/css'));
+}
+
+gulp.task('sass', function () {
+  gulp.watch('./assets/styles/**/*.sass', function (event) {
+    sassAction(event.path)
+      .pipe(livereload());
+  });
+});
+
+gulp.task('make:sass', function () {
+  sassAction('./assets/styles/**/*.sass');
+});
+
+// ↓↓↓↓ something useful,but not be used in this project ↓↓↓↓
+
+// mapping the original paths to the revisioned paths
+gulp.task('rev', function () {
+  var filter = gfilter(['*', '!*.min.css']);
+  gulp.src('dist/css/*.css')
+    .pipe(filter)
+    .pipe(minifyCss())
+    .pipe(rev())
+    .pipe(rename(function (path) {
+      path.basename += ".min";
+    }))
+    .pipe(gulp.dest('dist/css/'))
+    .pipe(rev.manifest())
+    .pipe(gulp.dest('dist'));
+});
+// copy directories and files
+gulp.task('copy:something', function () {
+  return gulp.src('./path/to/**/*')
+    .pipe(gulp.dest('./path/to/dist/dir/'));
+});
+// usemin task
 gulp.task('usemin', function () {
   return gulp.src('./*.html')
     .pipe(usemin({
@@ -278,77 +324,24 @@ gulp.task('usemin', function () {
     }))
     .pipe(gulp.dest('./build'));
 });
-
-// copy directories and files
-gulp.task('copy:something', function () {
-  return gulp.src('./path/to/**/*')
-    .pipe(gulp.dest('./path/to/dist/dir/'));
-});
-
-// if you use jade
-var jade = require('gulp-jade');
-gulp.task('jade', function () {
-  gulp.watch(['./assets/templates/*.jade', '!./assets/templates/layout.jade'], function (event) {
-    gulp.src(event.path)
-      .pipe(plumber())
-      .pipe(jade({
-        pretty: true
-      }))
-      .pipe(gulp.dest('./dist'))
-      .pipe(livereload());
-  });
-});
-
-// if you use jade
-// require('gulp-coffee')
-gulp.task('coffee', function () {
-  gulp.watch('./assets/scripts/**/*.coffee', function (event) {
-    gulp.src(event.path)
-      .pipe(plumber())
-      .pipe(sourcemaps.init())
-      .pipe(coffee())
-      .pipe(sourcemaps.write())
-      .pipe(gulp.dest('./dist/js'))
-      .pipe(livereload());
-  });
-});
-
-// if you use sass
-// require('gulp-ruby-sass')
-gulp.task('sass', function () {
-  gulp.watch('./assets/styles/**/*.sass', function (event) {
-    sass(event.path, {
-        sourcemap: true,
-        stopOnError: false
-      })
-      .on('error', sass.logError)
-      .pipe(sourcemaps.write())
-      .pipe(gulp.dest('./dist/css'))
-      .pipe(livereload());
-  });
-});
-
-// mapping the original paths to the revisioned paths
-
-gulp.task('rev', function () {
-  var filter = gfilter(['*', '!*.min.css']);
-  gulp.src('dist/css/*.css')
-    .pipe(filter)
-    .pipe(minifyCss())
-    .pipe(rev())
-    .pipe(rename(function (path) {
-      path.basename += ".min";
+// less
+gulp.task('less', function () {
+  gulp.src('asset/styles/*.less')
+    // prevent pipe breaking caused by errors
+    .pipe(plumber())
+    .pipe(sourcemaps.init())
+    .pipe(less())
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions']
     }))
-    .pipe(gulp.dest('dist/css/'))
-    .pipe(rev.manifest())
-    .pipe(gulp.dest('dist'));
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('dist/css/'));
 });
-
+// END;
 gulp.task('devTask', function () {
-  runSequence(['watch:html', 'watch:style', 'watch:coffee', 'watch:script'], 'watch:bundle', function () {
+  runSequence('serve', 'make:sass', ['watch:html', 'watch:style', 'watch:coffee', 'watch:script'], 'watch:bundle', function () {
     livereload.listen();
   });
-  // runSequence('serve', ['watch:html', 'watch:style', 'watch:script'], 'watch:bundle', function () {});
 });
 
 gulp.task('build', function () {
