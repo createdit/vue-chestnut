@@ -20,7 +20,14 @@
         <div class="user-control">
             <button class="ui basic button" v-on:click="showCtrl('add')">Add User</button>
             <button class="ui basic button" v-on:click="showCtrl('del')">Del User</button>
-            <button class="ui basic button">Edit User</button>
+            <button class="ui basic button" v-on:click="edit">
+                <template v-if="!editable">
+                    Edit User
+                </template>
+                <template v-if="editable">
+                    Done
+                </template>
+            </button>
             <div class="ui input">
                 <input type="text" placeholder="Search..." v-model="search" v-on:focus="hideCtrl">
             </div>
@@ -55,7 +62,17 @@
                     <label></label>
                 </div>
                 <img class="ui avatar image" v-bind:src="user.avatar">
-                <div class="content">{{user.name}} </div>
+                <div class="content">
+                    <tempalte v-if="!editable">
+                        {{user.name}}
+                    </tempalte>
+                    <template v-if="editable">
+                        <div class="ui input">
+                          <input type="text" v-model="user.name">
+                        </div>
+                    </template>
+
+                </div>
             </div>
         </div>
     </div>

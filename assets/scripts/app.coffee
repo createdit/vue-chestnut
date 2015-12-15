@@ -14,6 +14,7 @@ User = new Vue {
     delShown: false
     addShown: false
     search: ''
+    editable: false
     userList: [
       {
         name: 'Lena'
@@ -89,6 +90,8 @@ User = new Vue {
           result.push clone
         return
       this.userList = result
+    edit: () ->
+      this.editable = !this.editable
   events:
     initListCheckbox: () ->
       self = this
