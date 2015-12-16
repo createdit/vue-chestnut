@@ -27,6 +27,7 @@ User = Vue.extend {
       ]
     }
   computed:
+    # I want to make sure that userList is pure.so I copy the userList and name it renderList, the new data will be added some descriptive properties.
     renderList: () ->
       result = []
       # give the new user a random default avatar
@@ -80,8 +81,8 @@ User = Vue.extend {
       self = this
       result = []
       $.each this.renderList, (i, item) ->
-        console.log item.checked
         if not item.checked
+          # deep clone, cause I need all actions and keys
           clone = $.extend(true, {}, item)
           delete clone.checked
           result.push clone
@@ -107,6 +108,7 @@ User = Vue.extend {
     this.$emit('initListCheckbox')
     $('.select-all').checkbox {
       onChecked: () ->
+        # sync viewmodel
         self.selectAll = true
         # Cause the list will be changed by delete or add
         $('.user-list .ui.checkbox').checkbox('set checked')
