@@ -114,8 +114,8 @@ gulp.task('watch:coffee', function () {
 
 // browserify files map
 var files = [{
-  input: 'assets/scripts/app.coffee',
-  output: 'app-bundle.js'
+  input: 'assets/scripts/router.coffee',
+  output: 'app.js'
 }];
 var isWatch = false;
 var Defer = function (max, callback) {

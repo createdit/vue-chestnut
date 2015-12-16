@@ -1,34 +1,31 @@
-Vue = require 'Vue'
-VueAsyncData = require 'VueAsyncData'
-Vue.use VueAsyncData
-VueRouter = require 'VueRouter'
-Vue.use VueRouter
-router = new VueRouter()
-Vue.config.debug = true
 STATIC_PATH = 'images/'
-User = new Vue {
-  el: 'body'
-  data:
-    add: ''
-    selectAll: false
-    delShown: false
-    addShown: false
-    search: ''
-    editable: false
-    userList: [
-      {
-        name: 'Lena'
-      },
-      {
-        name: 'Lindsay'
-      },
-      {
-        name: 'Mark'
-      },
-      {
-        name: 'Molly'
-      }
-    ]
+tpl = require '../templates/user-manage.html'
+User = Vue.extend {
+  template: tpl
+  data: () ->
+    return {
+      add: ''
+      selectAll: false
+      delShown: false
+      addShown: false
+      search: ''
+      editable: false
+      submitData: false
+      userList: [
+        {
+          name: 'Lena'
+        },
+        {
+          name: 'Lindsay'
+        },
+        {
+          name: 'Mark'
+        },
+        {
+          name: 'Molly'
+        }
+      ]
+    }
   computed:
     renderList: () ->
       result = []
@@ -121,3 +118,4 @@ User = new Vue {
     }
     return
 }
+module.exports = User

@@ -13,75 +13,18 @@
         <div class="item">
             <img src="images/logo.png">
         </div>
-        <a class="item">User Manage</a>
+        <a class="item" v-link="{ path: '/', exact: true, activeClass: 'active'}">Home</a>
+        <a class="item" v-link="{ path: '/userManage', exact: true, activeClass: 'active'}">User Manage</a>
     </div>
     <div class="ui container main-container">
-        <h2 class="ui center aligned icon header"><i class="circular users icon"></i> User Manage </h2>
-        <div class="user-control">
-            <button class="ui basic button" v-on:click="showCtrl('add')">Add User</button>
-            <button class="ui basic button" v-on:click="showCtrl('del')">Del User</button>
-            <button class="ui basic button" v-on:click="edit">
-                <template v-if="!editable">
-                    Edit User
-                </template>
-                <template v-if="editable">
-                    Done
-                </template>
-            </button>
-            <div class="ui input">
-                <input type="text" placeholder="Search..." v-model="search" v-on:focus="hideCtrl">
-            </div>
-        </div>
-        <div class="add-user-container" v-show="addShown">
-            <div class="ui form">
-                <div class="inline field">
-                    <label>Name</label>
-                    <input type="text" name="name" placeholder="Name" v-model="add" v-on:keyup.13="addUser">
-                </div>
-                <button type="button" class="ui button" name="button" v-on:click="addUser">Submit</button>
-            </div>
-        </div>
-        <div class="add-user-container" v-show="delShown">
-            <div class="ui form">
-                <div class="inline field">
-                    <div class="ui checkbox select-all">
-                        <input type="checkbox" name="all" tabindex="0" class="hidden">
-                        <label>Select All</label>
-                    </div>
-                </div>
-                <button type="button" class="ui button" name="button" v-on:click="delSelect">Delete Selected</button>
-            </div>
-        </div>
-        <div class="ui middle aligned divided list user-list">
-            <div class="item" v-for="user in renderList | filterBy search in 'name'">
-                <div class="right floated content">
-                    <div class="ui button del-user-btn" v-on:click="delUser($index)">Del</div>
-                </div>
-                <div class="ui checkbox" v-show="delShown">
-                    <input type="checkbox" tabindex="0" class="hidden" data-index="{{$index}}">
-                    <label></label>
-                </div>
-                <img class="ui avatar image" v-bind:src="user.avatar">
-                <div class="content">
-                    <tempalte v-if="!editable">
-                        {{user.name}}
-                    </tempalte>
-                    <template v-if="editable">
-                        <div class="ui input">
-                          <input type="text" v-model="user.name">
-                        </div>
-                    </template>
-
-                </div>
-            </div>
-        </div>
+        <router-view></router-view>
     </div>
     <script src="libs/jquery.min.js"></script>
     <script src="libs/semantic.js"></script>
     <script src="libs/vue.js"></script>
     <script src="libs//vue-router.min.js"></script>
     <script src="libs/vue-async-data.js"></script>
-    <script src="dist/js/app-bundle.js"></script>
+    <script src="dist/js/app.js"></script>
 </body>
 
 </html>
