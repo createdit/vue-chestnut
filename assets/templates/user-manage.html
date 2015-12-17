@@ -18,7 +18,7 @@
     <div class="ui form">
         <div class="inline field">
             <label>Name</label>
-            <input type="text" name="name" placeholder="Name" v-model="add" v-on:keyup.13="addUser">
+            <input type="text" name="name" placeholder="Name" v-model="add" v-on:keyup.13="addUser" autocomplete="off">
         </div>
         <button type="button" class="ui button" name="button" v-on:click="addUser">Submit</button>
     </div>
@@ -50,7 +50,7 @@
             </template>
             <template v-if="editable">
                 <div class="ui input">
-                  <input type="text" v-model="user.name">
+                    <input type="text" v-model="user.name">
                 </div>
             </template>
         </div>
@@ -61,3 +61,21 @@
 <div class="code" v-show="submitData">
     <pre>{{ userList | json 4 }}</pre>
 </div>
+
+<feed inline-template>
+    <div class="ui feed">
+        <div class="event" v-for="item in eventLine">
+            <div class="label">
+                <img src="/images/admin.png">
+            </div>
+            <div class="content">
+                <div class="summary"><a class="user"> Admin </a> {{item.desc}} <a class="user">{{item.name}}</a>
+                    <div class="date">{{item.time}}</div>
+                </div>
+                <div class="meta">
+                    <!-- <a class="like"><i class="like icon"></i> 4 Likes </a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</feed>

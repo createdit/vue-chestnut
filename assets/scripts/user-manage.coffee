@@ -62,6 +62,8 @@ User = Vue.extend {
       this.userList.push {
         name: this.add
       }
+      this.$broadcast 'eventLine-add', this.add
+      this.addShown = false
     delUser: (index) ->
       this.userList.splice(index, 1)
     delSelect: () ->
@@ -73,8 +75,8 @@ User = Vue.extend {
           clone = $.extend(true, {}, item)
           delete clone.checked
           result.push clone
-        return
       this.userList = result
+      return
     edit: () ->
       this.editable = !this.editable
   events:
@@ -114,5 +116,26 @@ User = Vue.extend {
         return
     }
     return
+  components:
+    feed: {
+      data: () ->
+        eventLine: [
+        ]
+      events:
+        add: (name) ->
+          date = new Date()
+          hour = date.getHours()
+          minus = date.getMinutes()
+          if /^\d{1}$/.test(minus)
+            minus = '0' + minus
+          this.eventLine.push {
+            time: hour + ':' + minus
+            desc: 'add a user named'
+            name: name
+          }
+      created: () ->
+        this.$on 'eventLine-add', (name) ->
+          this.$emit 'add', name
+    }
 }
 module.exports = User
