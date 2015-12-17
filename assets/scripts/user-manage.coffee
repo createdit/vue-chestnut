@@ -11,20 +11,7 @@ User = Vue.extend {
       search: ''
       editable: false
       submitData: false
-      userList: [
-        {
-          name: 'Lena'
-        },
-        {
-          name: 'Lindsay'
-        },
-        {
-          name: 'Mark'
-        },
-        {
-          name: 'Molly'
-        }
-      ]
+      userList: []
     }
   computed:
     # I want to make sure that userList is pure.so I copy the userList and name it renderList, the new data will be added some descriptive properties.
@@ -103,6 +90,14 @@ User = Vue.extend {
           index = $(this).data('index')
           self.renderList[index].checked = false
       }
+  created: () ->
+    self = this
+    userListRequest = $.ajax {
+      url: '/data/user_list.json'
+      dataType: 'json'
+    }
+    userListRequest.done (data) ->
+      self.userList = data.userList
   ready: () ->
     self = this
     this.$emit('initListCheckbox')

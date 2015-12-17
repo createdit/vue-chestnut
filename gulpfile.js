@@ -29,7 +29,6 @@ var gulp = require('gulp'),
   sass = require('gulp-ruby-sass'),
   coffee = require('gulp-coffee'),
   coffeelint = require('gulp-coffeelint'),
-  //clean = require('gulp-clean');
   argv = require('yargs').argv,
   coffeeify = require('coffeeify'),
   jade = require('gulp-jade');
@@ -350,6 +349,7 @@ gulp.task('build', function () {
 
 var spawn = require('child_process').spawn;
 var kill = require('tree-kill');
+var gulpcmd = process.platform === "win32" ? "gulp.cmd" : "gulp";
 gulp.task('dev', function () {
   var process;
 
@@ -357,7 +357,7 @@ gulp.task('dev', function () {
     if (process) {
       kill(process.pid, 'SIGKILL');
     }
-    process = spawn('gulp.cmd', ['devTask'], {
+    process = spawn(gulpcmd, ['devTask'], {
       stdio: 'inherit'
     });
   }
