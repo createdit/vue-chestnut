@@ -83,7 +83,7 @@ gulp.task('watch:style', function () {
     }
   }
   runSequence('sass', function () {
-    return gulp.watch('dist/css/**/*.css').on('change', stackReload);
+    return gulp.watch('./public/dist/css/**/*.css').on('change', stackReload);
   });
 });
 
@@ -95,7 +95,7 @@ gulp.task('watch:html', function () {
 });
 
 gulp.task('watch:script', function () {
-  return gulp.watch(['assets/scripts/*.js', '!assets/scripts/bundle.js', './*.js', '!gulpfile.js', './routes/*.js', './api/*.js'], function (event) {
+  return gulp.watch(['assets/scripts/*.js', './*.js', '!gulpfile.js'], function (event) {
     gulp.src(event.path)
       .pipe(eslint())
       .pipe(eslint.format());
@@ -141,7 +141,7 @@ function bundle(bundler, options) {
       loadMaps: true
     }))
     .pipe(sourcemaps.write())
-    .pipe(gulp.dest('dist/js/'))
+    .pipe(gulp.dest('./public/dist/js/'))
     .on('end', function () {
       var time = (new Date().getTime() - startTime) / 1000;
       gutil.log(options.output + ' was browserified: ' + time + 's');
@@ -212,20 +212,20 @@ gulp.task('minify:css', function () {
     .pipe(rename(function (path) {
       path.basename += ".min";
     }))
-    .pipe(gulp.dest('./dist/css'));
+    .pipe(gulp.dest('./public/dist/css'));
 });
 
 var minifyFilesCache = [];
 gulp.task('minify:js', function () {
   var filter = gfilter(['*', '!*.min.js']);
-  return gulp.src('./dist/js/*.js')
+  return gulp.src('./public/dist/js/*.js')
     .pipe(filter)
     .pipe(uglify())
     .pipe(rename(function (path) {
       minifyFilesCache.push(path.basename + path.extname);
       path.basename += ".min";
     }))
-    .pipe(gulp.dest('dist/js'));
+    .pipe(gulp.dest('./public/dist/js'));
 });
 
 gulp.task('replace:jsPath', function () {
@@ -272,7 +272,7 @@ function sassAction (path) {
     })
     .on('error', sass.logError)
     .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./dist/css'));
+    .pipe(gulp.dest('./public/dist/css'));
 }
 
 gulp.task('sass', function () {
@@ -338,7 +338,7 @@ gulp.task('less', function () {
 });
 // END;
 gulp.task('devTask', function () {
-  runSequence('serve', 'make:sass', ['watch:html', 'watch:style', 'watch:coffee', 'watch:script'], 'watch:bundle', function () {
+  runSequence('make:sass', ['watch:html', 'watch:style', 'watch:coffee', 'watch:script'], 'watch:bundle', function () {
     livereload.listen();
   });
 });

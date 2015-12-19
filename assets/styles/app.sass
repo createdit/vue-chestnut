@@ -2,6 +2,11 @@ $green: #21BA45
 $blue: #2185D0
 $orange: #F2711C
 $teal: #00B5AD
+@mixin clearfix
+	&:after
+		content: ''
+		display: table
+		clear: both
 body
 	height: auto
 .main-container
@@ -35,3 +40,31 @@ body
 .intro-head
 	p
 		font-size: 16px
+.weather-card
+	@include clearfix
+	padding: 16px
+	width: 100%
+	max-width: 600px
+	margin: 0 auto
+	box-shadow: 1px 1px 3px #9E9E9E
+.weather-body
+	width: 100%
+	text-align: center
+.weather-temperature
+	font-size: 24px
+	margin-bottom: 10px
+.weather-pm
+	font-size: 18px
+.weather-temperature-range
+	color: #616161
+.weather-city
+	font-size: 18px
+.weather-footer
+	display: table
+	margin-top: 12px
+	width: 100%
+	font-size: 16px
+	.column
+		display: table-cell
+		text-align: center
+		vertical-align: middle

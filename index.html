@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="favicon.ico">
     <title>Document</title>
     <link rel="stylesheet" href="libs/semantic.min.css">
     <link rel="stylesheet" href="dist/css/app.css">
@@ -15,6 +16,7 @@
         </div>
         <a class="item" v-link="{ path: '/', exact: true, activeClass: 'active'}">Home</a>
         <a class="item" v-link="{ path: '/userManage', exact: true, activeClass: 'active'}">User Manage</a>
+        <a class="item" v-link="{ path: '/weather', exact: true, activeClass: 'active'}">Weather</a>
     </div>
     <div class="ui container main-container">
         <router-view></router-view>
