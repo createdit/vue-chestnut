@@ -9,7 +9,7 @@ VUE EXAMPLE
 
 如果你觉得有其他频繁的使用场景没有被提及，或存在难理解的部分且没有注释，可以联系我增加相关内容。
 
-js代码使用了coffeeScript语法，如果你缺乏这方面的知识，你可以花5分钟学习一下[文档](http://coffee-script.org/#conditionals)，非常简单。
+js代码使用了coffeeScript语法，如果你缺乏这方面的知识，你可以花5分钟学习一下[文档](http://coffee-script.org/#top)，非常简单。
 
 ### 运行
 
